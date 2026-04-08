@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GHL Order Form Demo — Dimitra P.</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1c1c1c; font-size: 14px; line-height: 1.6; }
+    .of-wrap { max-width: 900px; margin: 2rem auto; padding: 0 1rem 3rem; }
+    .of-header { text-align: center; padding: 2rem 1.5rem; background: linear-gradient(135deg, #E07858 0%, #c45f3e 100%); border-radius: 16px 16px 0 0; color: #fff; }
+    .of-header h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+    .of-header p  { font-size: 13px; margin: 0; opacity: 0.88; }
+    .of-steps { background: #fdf0ec; border-left: 1px solid #f0c4b0; border-right: 1px solid #f0c4b0; padding: 14px 1.5rem; display: flex; justify-content: center; align-items: center; gap: 0; }
+    .step { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+    .step.active { color: #E07858; font-weight: 600; }
+    .step.done { color: #16a34a; }
+    .step-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #fff; }
+    .step.active .step-dot { background: #E07858; color: #fff; border-color: #E07858; }
+    .step.done .step-dot { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .step-line { width: 36px; height: 1px; background: #e5e7eb; margin: 0 2px; }
+    .step-line.done { background: #16a34a; }
+    .of-body { display: grid; grid-template-columns: 1fr 310px; gap: 1.5rem; padding: 1.5rem 0; }
+    @media(max-width: 680px) { .of-body { grid-template-columns: 1fr; } }
+    .of-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .of-section-title { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 1rem; padding-bottom: 8px; border-bottom: 1px solid #f3f4f6; }
+    .of-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .of-row.full { grid-template-columns: 1fr; }
+    .of-row.three { grid-template-columns: 1fr 1fr 80px; }
+    .of-field { display: flex; flex-direction: column; }
+    .of-field label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+    .of-field input, .of-field select {
+      padding: 9px 11px; border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 13px; background: #fafafa; color: #1c1c1c;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .of-field input:focus, .of-field select:focus {
+      outline: none; box-shadow: 0 0 0 3px rgba(224,120,88,0.15);
+      border-color: #E07858; background: #fff;
+    }
+    .plan-option { border: 1px solid #e5e7eb; border-radius: 10px; padding: 11px 13px; cursor: pointer; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; transition: all 0.2s; }
+    .plan-option:hover { border-color: #E07858; }
+    .plan-option.selected { border: 2px solid #E07858; background: #fdf7f5; }
+    .plan-radio { width: 16px; height: 16px; accent-color: #E07858; margin-top: 2px; flex-shrink: 0; }
+    .plan-label { font-size: 13px; font-weight: 600; color: #1c1c1c; }
+    .plan-option.selected .plan-label { color: #c45f3e; }
+    .plan-sub { font-size: 12px; color: #6b7280; margin-top: 1px; }
+    .badge-save { background: #fdf0ec; color: #c45f3e; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 50px; border: 1px solid #f0c4b0; margin-left: 5px; }
+    .card-icons { display: flex; gap: 5px; margin-bottom: 12px; }
+    .card-icon-pill { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 5px; padding: 3px 8px; font-size: 11px; font-weight: 700; color: #4b5563; }
+    .product-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .product-row:last-child { border: none; }
+    .product-img { width: 44px; height: 44px; border-radius: 10px; background: #fdf0ec; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .product-name { font-size: 13px; font-weight: 600; flex: 1; line-height: 1.4; }
+    .product-name small { font-weight: 400; color: #9ca3af; font-size: 11px; display: block; }
+    .product-price { font-size: 13px; font-weight: 700; color: #E07858; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; border-bottom: 1px solid #f3f4f6; color: #374151; }
+    .summary-row:last-child { border: none; font-weight: 700; font-size: 15px; color: #1c1c1c; }
+    .of-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #E07858, #c45f3e); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; letter-spacing: 0.2px; transition: opacity 0.2s; }
+    .of-btn:hover { opacity: 0.92; }
+    .trust-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+    .trust-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #9ca3af; }
+    .promo-row { display: flex; gap: 6px; }
+    .promo-row input { flex: 1; padding: 8px 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; }
+    .promo-btn { padding: 8px 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: #374151; white-space: nowrap; transition: background 0.15s; }
+    .promo-btn:hover { background: #f3f4f6; }
+    .sticky-summary { position: sticky; top: 1rem; }
+    .includes-list { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #6b7280; }
+    .includes-list span::before { content: "✓ "; color: #E07858; font-weight: 700; }
+    .rating-box { margin-top: 12px; background: #fafafa; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #6b7280; text-align: center; line-height: 1.7; border: 1px solid #f3f4f6; }
+  </style>
+</head>
+<body>
+<div class="of-wrap">
+
+  <div class="of-header">
+    <div style="font-size:11px;letter-spacing:2px;opacity:0.7;margin-bottom:6px;">SECURE ORDER FORM</div>
+    <h1>Fundability Pro — Monthly</h1>
+    <p>Start building your business credit today. Cancel anytime.</p>
+  </div>
+
+  <div class="of-steps">
+    <div class="step done"><div class="step-dot">✓</div><span>Choose Plan</span></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-dot">2</div><span>Your Info</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">3</div><span>Payment</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">4</div><span>Confirm</span></div>
+  </div>
+
+  <div class="of-body">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <div class="of-card">
+        <div class="of-section-title">Order details</div>
+        <div class="product-row">
+          <div class="product-img">📊</div>
+          <div class="product-name">Fundability System + Concierge Coaching<small>Monthly access · Unlimited support</small></div>
+          <div class="product-price">$297/mo</div>
+        </div>
+        <div class="product-row">
+          <div class="product-img">🎓</div>
+          <div class="product-name">Business Credit Masterclass<small>Bonus included <span class="badge-save">FREE</span></small></div>
+          <div class="product-price" style="text-decoration:line-through;color:#9ca3af;font-size:12px;">$197</div>
+        </div>
+      </div>
+
+      <div class="of-card">
+        <div class="of-section-title">Billing information</div>
+        <div class="of-row">
+          <div class="of-field"><label>First name *</label><input type="text" placeholder="Jane"></div>
+          <div class="of-field"><label>Last name *</label><input type="text" placeholder="Doe"></div>
+        </div>
+        <div class="of-row full">
+          <div class="of-field"><label>Company name *</label><input type="text" placeholder="Acme Corp"></div>
+        </div>
+        <div class="of-row full">
+          <div class="of-field"><label>Street address *</label><input type="text" placeholder="123 Main St, Suite 400"></div>
+        </div>
+        <div class="of-row three">
+          <div class="of-field"><label>City *</label><input type="text" placeholder="New York"></div>
+          <div class="of-field"><label>State</label>
+            <select><option>NY</option><option>CA</option><option>TX</option><option>FL</option><option>IL</option></select>
+          </div>
+          <div class="of-field"><label>ZIP *</label><input type="text" placeholder="10001"></div>
+        </div>
+        <div class="of-row">
+          <div class="of-field"><label>Phone *</label><input type="tel" placeholder="+1 (888) 555-1212"></div>
+          <div class="of-field"><label>Email *</label><input type="email" placeholder="you@company.com"></div>
+        </div>
+      </div>
+
+      <div class="of-card">
+        <div class="of-section-title">Choose your payment plan</div>
+        <div class="plan-option selected" onclick="selectPlan(this,'$297.00/month','$297.00')">
+          <input type="radio" class="plan-radio" name="plan" checked>
+          <div>
+            <div class="plan-label">Monthly — $297.00/month</div>
+            <div class="plan-sub">Billed every 30 days · Cancel anytime</div>
+          </div>
+        </div>
+        <div class="plan-option" onclick="selectPlan(this,'$797.00 every 3 months','$797.00')">
+          <input type="radio" class="plan-radio" name="plan">
+          <div>
+            <div class="plan-label">Quarterly — $797.00 every 3 months <span class="badge-save">Save 11%</span></div>
+            <div class="plan-sub">Billed every 90 days · Most popular</div>
+          </div>
+        </div>
+        <div class="plan-option" onclick="selectPlan(this,'$2,497.00/year','$2,497.00')">
+          <input type="radio" class="plan-radio" name="plan">
+          <div>
+            <div class="plan-label">Annual — $2,497.00/year <span class="badge-save">Save 30%</span></div>
+            <div class="plan-sub">Best value · One payment · Full year access</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="of-card">
+        <div class="of-section-title">Payment information</div>
+        <div class="card-icons">
+          <span class="card-icon-pill">VISA</span>
+          <span class="card-icon-pill">MC</span>
+          <span class="card-icon-pill">AMEX</span>
+          <span class="card-icon-pill">DISC</span>
+        </div>
+        <div class="of-row full">
+          <div class="of-field"><label>Card number *</label>
+            <input type="text" placeholder="1234  5678  9012  3456" maxlength="19"
+              oninput="let v=this.value.replace(/\D/g,'').substring(0,16);this.value=v.replace(/(.{4})/g,'$1 ').trim()">
+          </div>
+        </div>
+        <div class="of-row three">
+          <div class="of-field"><label>Expiry month *</label>
+            <select><option value="">MM</option><option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option></select>
+          </div>
+          <div class="of-field"><label>Expiry year *</label>
+            <select><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select>
+          </div>
+          <div class="of-field"><label>CVV *</label><input type="text" placeholder="123" maxlength="4"></div>
+        </div>
+        <div class="of-row full">
+          <div class="of-field"><label>Name on card *</label><input type="text" placeholder="Jane Doe"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="sticky-summary">
+        <div class="of-card">
+          <div class="of-section-title">Order summary</div>
+          <div class="summary-row"><span>Fundability Pro</span><span>$297.00</span></div>
+          <div class="summary-row"><span>Masterclass (bonus)</span><span style="color:#16a34a;font-weight:600;">FREE</span></div>
+          <div class="summary-row"><span>Discount</span><span id="discount-val">—</span></div>
+          <div class="summary-row"><span>Due today</span><span id="due-today" style="color:#E07858;">$297.00</span></div>
+          <div style="font-size:11px;color:#9ca3af;text-align:right;margin-top:-2px;padding-bottom:8px;border-bottom:1px solid #f3f4f6;">Billed: <span id="billed-label">$297.00/month</span></div>
+
+          <div style="margin:12px 0;">
+            <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Promo code</div>
+            <div class="promo-row">
+              <input type="text" id="promo-input" placeholder="Enter code (try SAVE20)">
+              <button class="promo-btn" onclick="applyPromo()">Apply</button>
+            </div>
+            <div id="promo-msg" style="font-size:11px;margin-top:4px;min-height:14px;"></div>
+          </div>
+
+          <button class="of-btn" onclick="placeOrder()">
+            Place Order — <span id="btn-amount">$297.00</span>
+          </button>
+
+          <div class="trust-row">
+            <div class="trust-item">🔒 SSL Secured</div>
+            <div class="trust-item">↩ 30-day guarantee</div>
+            <div class="trust-item">✓ Verified checkout</div>
+          </div>
+        </div>
+
+        <div class="of-card">
+          <div class="of-section-title">What's included</div>
+          <div class="includes-list">
+            <span>Full Fundability System access</span>
+            <span>1-on-1 Concierge Coaching calls</span>
+            <span>Business Credit Masterclass (FREE)</span>
+            <span>Private members community</span>
+            <span>Monthly live Q&A sessions</span>
+            <span>Cancel anytime, no lock-in</span>
+          </div>
+          <div class="rating-box">
+            Trusted by <strong>12,000+</strong> business owners<br>
+            ⭐⭐⭐⭐⭐ &nbsp;4.9/5 average rating
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="text-align:center;font-size:11px;color:#9ca3af;padding-bottom:1rem;">
+    By placing your order you agree to our Terms of Service and Privacy Policy.<br>
+    Secure payments powered by Stripe · 256-bit SSL encryption
+  </div>
+
+</div>
+
+<script>
+function selectPlan(el, label, amount) {
+  document.querySelectorAll('.plan-option').forEach(p => {
+    p.classList.remove('selected');
+    p.querySelector('input').checked = false;
+  });
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+  document.getElementById('billed-label').textContent = label;
+  document.getElementById('due-today').textContent = amount;
+  document.getElementById('btn-amount').textContent = amount;
+  document.getElementById('discount-val').textContent = '—';
+  document.getElementById('promo-msg').textContent = '';
+  document.getElementById('promo-input').value = '';
+}
+
+function applyPromo() {
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  const msg  = document.getElementById('promo-msg');
+  if (code === 'SAVE20') {
+    document.getElementById('discount-val').textContent = '-$59.40';
+    document.getElementById('due-today').textContent = '$237.60';
+    document.getElementById('btn-amount').textContent = '$237.60';
+    msg.style.color = '#16a34a'; msg.textContent = '✓ Coupon applied — 20% off!';
+  } else {
+    msg.style.color = '#dc2626'; msg.textContent = 'Invalid code. Try: SAVE20';
+  }
+}
+
+function placeOrder() {
+  const btn = document.querySelector('.of-btn');
+  btn.textContent = 'Processing...';
+  btn.style.background = '#6b7280';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✓ Order Placed Successfully!';
+    btn.style.background = '#16a34a';
+  }, 1500);
+}
+</script>
+</body>
+</html>
